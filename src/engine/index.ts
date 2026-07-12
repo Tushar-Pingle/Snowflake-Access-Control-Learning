@@ -1,0 +1,10 @@
+/** Public surface of the RBAC simulator engine. */
+export * from './types'
+export * from './model'
+export * from './builder'
+export * from './roleGraph'
+export * from './privileges'
+export * from './explainAccess'
+export * from './apply'
+export * from './sql'
+export * from './grader'
