@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
-      - claude/snowflake-access-control-webapp-krqbhz
+    branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 # Allow the workflow to publish to GitHub Pages.
@@ -19,6 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Build + test on every push and PR (validation), and upload the Pages artifact.
   build:
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +29,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - name: Install dependencies
@@ -45,7 +46,11 @@ jobs:
         with:
           path: dist
 
+  # Deploy ONLY from the default branch. The github-pages environment restricts
+  # deployments to the default branch, so deploying from other branches fails —
+  # this guard avoids those spurious failures.
   deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     environment:
